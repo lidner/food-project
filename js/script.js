@@ -43,8 +43,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Modal window
     const modalTrigger = document.querySelectorAll('[data-modal]'),
-          modal = document.querySelector('.modal');
-    
+        modal = document.querySelector('.modal');
+
     modalTrigger.forEach(btn => {
         btn.addEventListener('click', openModal);
     });
@@ -179,15 +179,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 display: block;
                 margin: 0 auto;
             `
-            // form.append(statusMessage);
+
             form.insertAdjacentElement('afterend', statusMessage);
 
-
-            const request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
-
-            // this header used for JSON
-            request.setRequestHeader('Content-type', 'application/json');
             const formData = new FormData(form);
 
             const object = {};
@@ -195,29 +189,31 @@ window.addEventListener('DOMContentLoaded', function () {
                 object[key] = value;
             });
 
-            const json = JSON.stringify(object);
 
-            request.send(json);
-
-            request.addEventListener('load', () => {
-                if (request.status === 200) {
-                    console.log(request.response);
+            fetch('serve1r.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json'
+                    },
+                    body: JSON.stringify(object)
+                })
+                .then(data => data.text())
+                .then(data => {
+                    console.log(data);
                     showThanksModal(message.success);
-                    form.reset();
                     statusMessage.remove();
-                } else {
+                }).catch(error => {
                     showThanksModal(message.failure);
-                }
-            });
-            
-            
+                }).finally(() => {
+                    form.reset();
+                });
         });
     }
 
 
     function showThanksModal(message) {
         const prevModalDialog = document.querySelector('.modal__dialog');
-        
+
         prevModalDialog.classList.add('hide');
         openModal();
 
@@ -241,5 +237,22 @@ window.addEventListener('DOMContentLoaded', function () {
             closeModal();
         }, 4000);
     }
+
+
+    // fetch('')
+    // fetch('https://jsonplaceholder.typicode.com/posts/', {
+    //         method: 'POST',
+    //         body: JSON.stringify({
+    //             name: 'Alex',
+    //             age: 26
+    //         }),
+    //         headers: {
+    //             'Content-type': 'application/json'
+    //         }
+    //     })
+    //     .then(response => response.json())
+    //     .then(json => console.log(json))
+    //     .catch(error => console.log('something went wrong'))
+
 
 });
